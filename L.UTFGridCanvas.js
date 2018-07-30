@@ -1,9 +1,11 @@
+import L_UTFGrid from './L.UTFGrid';
+
 L.UTFGridCanvas = L.UTFGrid.extend({
-	options: {
+    options: {
         idField: 'ID',  // Expects UTFgrid to have a property 'ID' that indicates the feature ID
         buildIndex: true,  // requires above field to be set properly
         fillColor: 'black',
-	    shadowBlur: 0,  // Number of pixels for blur effect
+        shadowBlur: 0,  // Number of pixels for blur effect
         shadowColor: null,  // Color for shadow, if present.  Defaults to fillColor.
         debug: false  // if true, show tile borders and tile keys
     },
@@ -14,7 +16,7 @@ L.UTFGridCanvas = L.UTFGrid.extend({
         this._adjacentTiles = [];
 
         L.UTFGrid.prototype.onAdd.call(this, map);
-	},
+    },
 
     createTile: function(coords) {
         this._loadTile(coords);
@@ -27,7 +29,7 @@ L.UTFGridCanvas = L.UTFGrid.extend({
         }
 
         return tile;
-	},
+    },
 
     _connectMapEventHandlers: function(){
         L.UTFGrid.prototype._connectMapEventHandlers.call(this);
@@ -113,6 +115,8 @@ L.UTFGridCanvas = L.UTFGrid.extend({
 
         if (this._tiles[tileKey] == null){ return }
 
+        var { resolution } = this.options;
+
         var canvas = this._tiles[tileKey].el;
         var ctx = canvas.getContext('2d');
 
@@ -120,7 +124,7 @@ L.UTFGridCanvas = L.UTFGrid.extend({
         var grid = this._cache[tileKey].grid;
 
         ctx.fillStyle = this.options.fillColor;
-        var dim = this.options.tileSize / this.options.resolution;
+        var dim = this.options.tileSize / resolution;
 
         // TODO: order of traversal here may be backwards?  Do y then x?  (are data column major or row major?)
         //modified slightly from: https://github.com/mapbox/glower/blob/mb-pages/src/glower.js
@@ -132,7 +136,12 @@ L.UTFGridCanvas = L.UTFGrid.extend({
                         y++;
                         sweep++;
                     }
-                    ctx.fillRect(x * 4, (y * 4) - ((sweep - 1) * 4), 4, 4 * sweep);
+                    ctx.fillRect(
+                        x * resolution,
+                        (y * resolution) - ((sweep - 1) * resolution),
+                        resolution,
+                        resolution * sweep
+                    );
                 }
             }
         }
@@ -140,7 +149,7 @@ L.UTFGridCanvas = L.UTFGrid.extend({
         if (this.options.shadowBlur) {
             this._addShadow(canvas, ctx);
         }
-	
+    
     },
 
     _resetTile: function(tileKey) {
@@ -187,5 +196,5 @@ L.UTFGridCanvas = L.UTFGrid.extend({
 
 
 L.utfGridCanvas = function (url, options) {
-	return new L.UTFGridCanvas(url, options);
+    return new L.UTFGridCanvas(url, options);
 };
