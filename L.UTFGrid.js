@@ -137,7 +137,6 @@ L.UTFGrid = L.TileLayer.extend({
         var script = document.createElement('script');
         script.setAttribute("type", "text/javascript");
         script.setAttribute("src", url);
-        head.appendChild(script);
 
         window[windowKey][jsonpFunctionName] = data => {
             self._cache[key] = data;
@@ -150,6 +149,8 @@ L.UTFGrid = L.TileLayer.extend({
 
             L.Util.bind(self._handleTileLoad, self)(key, data);
         };
+
+        head.appendChild(script);
     },
 
     _handleTileLoad: function(key, data) {
