@@ -132,7 +132,8 @@ L.UTFGrid = L.TileLayer.extend({
         var jsonpFunctionName = `${this._windowKeyPrefix}${coords.x}_${coords.y}_${coords.z}`;
         var callbackName = `${windowKey}.${jsonpFunctionName}`;
 
-        url += `?callback=${callbackName}`;
+        url += (~url.indexOf('?') ? '&' : '?') +
+            `callback=${callbackName}`;
 
         var script = document.createElement('script');
         script.setAttribute("type", "text/javascript");
