@@ -98,6 +98,12 @@ L.UTFGrid = L.TileLayer.extend({
         L.TileLayer.prototype._update.call(this, center, zoom);
     },
 
+    // @override
+    redraw: function () {
+        this._cache = {};
+        return L.TileLayer.prototype.redraw.call(this);
+    },
+
     _loadTile: function (coords) {
         var tileLoadFunction = this.options.useJsonP
             ? '_loadTileJsonP'
