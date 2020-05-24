@@ -33,7 +33,7 @@ L.UTFGrid = L.TileLayer.extend({
         /* Find a unique id in window we can use for our callbacks.
         Required for JSONP */
 
-        let i = 0;
+        var i = 0;
         while (window[this._windowKeyPrefix + i]) {
             i++;
         }
@@ -135,17 +135,20 @@ L.UTFGrid = L.TileLayer.extend({
 
         var head = document.getElementsByTagName('head')[0];
         var windowKey = this._windowKey;
-        var jsonpFunctionName = `${this._windowKeyPrefix}${coords.x}_${coords.y}_${coords.z}`;
-        var callbackName = `${windowKey}.${jsonpFunctionName}`;
+        var jsonpFunctionName = this._windowKeyPrefix + coords.x + '_' + coords.y + '_' + coords.z;
+        var callbackName = windowKey + '.' + jsonpFunctionName;
 
         url += (~url.indexOf('?') ? '&' : '?') +
-            `callback=${callbackName}`;
+            'callback=' + encodeURIComponent(callbackName + ' && ' + callbackName);
+            /* `callbackName && callbackName` is a protection from "Function not found"-type errors
+            (in case when zooming is fast, and JSONP-script does not have time to load -
+            its client function has already been destroyed) */
 
         var script = document.createElement('script');
         script.setAttribute("type", "text/javascript");
         script.setAttribute("src", url);
 
-        window[windowKey][jsonpFunctionName] = data => {
+        window[windowKey][jsonpFunctionName] = function(data) {
             self._cache[key] = data;
 
             delete window[windowKey][jsonpFunctionName];
